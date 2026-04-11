@@ -1,5 +1,6 @@
 import {useState, useEffect, useRef} from "react";
 import {motion, useInView, AnimatePresence} from "framer-motion";
+import logoImg from "./assets/logo.png";
 
 /* ─── Scroll-triggered wrapper ─── */
 function Reveal({children, delay = 0, direction = "up", className = ""}) {
@@ -513,27 +514,8 @@ export default function TheOriginDnC() {
             transition: "height .3s",
           }}
         >
-          <div style={{display: "flex", alignItems: "center", gap: 6}}>
-            <span
-              style={{
-                color: "#E8443A",
-                fontSize: 22,
-                fontWeight: 800,
-                fontFamily: "'Playfair Display', serif",
-              }}
-            >
-              The Origin
-            </span>
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 500,
-                color: "#888",
-                letterSpacing: 0.5,
-              }}
-            >
-              D&C
-            </span>
+          <div style={{display: "flex", alignItems: "center"}}>
+            <img src={logoImg} alt={BRAND} style={{ height: scrolled ? 40 : 48, transition: "height .3s" }} />
           </div>
           <div
             style={{display: "flex", alignItems: "center", gap: 32}}
@@ -670,37 +652,26 @@ export default function TheOriginDnC() {
                 style={{
                   fontSize: "clamp(36px,5vw,56px)",
                   fontWeight: 700,
-                  color: "#1a1a1a",
+                  color: "#fff",
                   lineHeight: 1.15,
                   marginBottom: 8,
                 }}
               >
-                Build <span style={{color: "#E8443A"}}>Right.</span> Live{" "}
-                <span style={{fontStyle: "italic"}}>Smart.</span>
+                {BRAND}
               </h1>
+              <p style={{ fontSize: 20, color: "rgba(255,255,255,0.9)", fontWeight: 500, marginBottom: 32 }}>
+                {TAGLINE}
+              </p>
             </Reveal>
             <Reveal delay={0.15}>
-              <p
-                style={{
-                  fontSize: 20,
-                  color: "#2a2a2a",
-                  marginBottom: 8,
-                  fontWeight: 500,
-                }}
-              >
-                The Pros Behind Bengaluru's Best Homes
-              </p>
-              <p style={{fontSize: 16, color: "#3a3a3a", marginBottom: 36}}>
-                ✨ {TAGLINE}
-              </p>
+              <RippleButton variant="dark" style={{ fontSize: 16, padding: "14px 36px", marginBottom: 32 }}>
+                Get a Free Estimate Now
+              </RippleButton>
             </Reveal>
             <Reveal delay={0.3}>
-              <div style={{display: "flex", gap: 16, flexWrap: "wrap"}}>
-                <RippleButton variant="dark">
-                  Talk to Our Architects Now
-                </RippleButton>
-                <RippleButton>Our Packages</RippleButton>
-              </div>
+              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.8)" }}>
+                Experience hassle-free home construction with us.
+              </p>
             </Reveal>
           </div>
         </div>
@@ -1107,26 +1078,7 @@ export default function TheOriginDnC() {
           <div className="grid3" style={{marginBottom: 48}}>
             <div>
               <div style={{marginBottom: 20}}>
-                <span
-                  style={{
-                    color: "#E8443A",
-                    fontSize: 22,
-                    fontWeight: 800,
-                    fontFamily: "'Playfair Display', serif",
-                  }}
-                >
-                  The Origin
-                </span>
-                <span
-                  style={{
-                    color: "#888",
-                    fontSize: 13,
-                    fontWeight: 500,
-                    marginLeft: 6,
-                  }}
-                >
-                  Design & Construction
-                </span>
+                <img src={logoImg} alt={BRAND} style={{ height: 48 }} />
               </div>
               <p
                 style={{
