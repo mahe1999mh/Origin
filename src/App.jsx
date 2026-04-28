@@ -1,6 +1,11 @@
 import {useState, useEffect, useRef} from "react";
 import {motion, useInView, AnimatePresence} from "framer-motion";
 import logoImg from "./assets/logo.png";
+import p1 from "./assets/img/p1.jpeg";
+import p2 from "./assets/img/p2.jpeg";
+import p3 from "./assets/img/p3.jpeg";
+import p4 from "./assets/img/p4.jpeg";
+import p5 from "./assets/img/p5.jpeg";
 
 /* ─── Scroll-triggered wrapper ─── */
 function Reveal({children, delay = 0, direction = "up", className = ""}) {
@@ -424,29 +429,49 @@ const packages = [
 ];
 
 const faqs = [
-  "Why The Origin Design & Construction and not any local builder or Mason?",
-  "What services are included in the Turnkey package?",
-  "What is the overall procedure after you submit your contact details?",
-  "Is there any consultation or site visit charge?",
-  "Do you take commercial projects?",
-  "Will there be any dedicated engineer allotted to my project?",
-  "How do you assure and control the quality of construction?",
-  "What are the types of drawings we provide?",
-  "What are the payment terms?",
-  "Does the construction package comprise the interior works as well?",
+  {
+    q: "What services do you provide?",
+    a: "We offer end-to-end construction services including residential construction, interiors, renovations, commercial projects and complete turnkey solutions from design to final handover.",
+  },
+  {
+    q: "Do you provide interior works as well?",
+    a: "Yes, we offer complete interior solutions including modular kitchens, wardrobes, false ceilings, electrical layouts, and finishing works tailored to your design and budget.",
+  },
+  {
+    q: "Do you provide both design and construction?",
+    a: "Yes, we provide complete solutions from planning and design to execution and handover.",
+  },
+  {
+    q: "Is front elevation included in the package?",
+    a: "Basic elevation design is included. However, execution cost depends on materials like cladding, tiles, granite, textures, and projections and will be charged based on the site and client requirements.",
+  },
+  {
+    q: "How is the construction cost calculated?",
+    a: "The construction cost is calculated based on the total slab area (built-up area), which includes the area covered by slab concreting for each floor.",
+  },
+  {
+    q: "Do you provide a detailed quotation?",
+    a: "Yes, we provide a transparent and detailed cost breakup before starting the project.",
+  },
+  {
+    q: "What is the payment structure?",
+    a: "Payments are made in stages based on construction progress. Each stage — such as substructure works, ground floor structural works, first floor structural works.",
+  },
+  {
+    q: "Will I get regular updates on the project?",
+    a: "Yes, we provide regular site updates, including photos and progress reports via WhatsApp or other communication channels.",
+  },
+  {
+    q: "What quality of materials do you use?",
+    a: "We use standard branded materials as per the selected package. Upgrades can be done based on client preference.",
+  },
+  {
+    q: "Why should I choose your company?",
+    a: "We focus on delivering high-quality construction with strict timelines, clear and transparent pricing and a strong commitment to achieving 100% client satisfaction in every project.",
+  },
 ];
 
-const projectImages = [
-  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
-];
+const projectImages = [p1, p2, p3, p4, p5];
 
 /* ─── Main Component ─── */
 export default function TheOriginDnC() {
@@ -950,11 +975,7 @@ export default function TheOriginDnC() {
                     marginBottom: 16,
                   }}
                 >
-                  {BRAND}'s main motto is to create living spaces where people
-                  can live, work and have everlasting memories. We are highly
-                  experienced with a multi-faceted team of Customer Specialists,
-                  Architects, Business Consultants, Project Managers and Site
-                  Engineers.
+                  {BRAND} is a Bangalore based construction company offering complete turnkey solutions across Karnataka for both residential and commercial projects. We specialize in architectural design, construction, interiors and renovation works — providing end-to-end services from concept to final handover under one roof.
                 </p>
                 <p
                   style={{
@@ -964,10 +985,7 @@ export default function TheOriginDnC() {
                     marginBottom: 24,
                   }}
                 >
-                  We provide services that take into account every minute detail
-                  of the project — offering the perfect blend of experience and
-                  innovation that not just builds your home but adds value and
-                  elegance to your new space.
+                  Our approach focuses on quality workmanship, timely project delivery and budget-friendly solutions without compromising standards. We are committed to delivering durable, functional, and aesthetically pleasing spaces tailored to our client's needs.
                 </p>
                 <RippleButton>Read More</RippleButton>
               </div>
@@ -995,11 +1013,11 @@ export default function TheOriginDnC() {
       <section id="faq" style={{background: "#fff"}}>
         <div className="section">
           <Reveal>
-            <h2 className="section-title heading-serif">FAQ's</h2>
+            <h2 className="section-title heading-serif">What Clients Ask — FAQ's</h2>
             <div className="section-line" />
           </Reveal>
           <div style={{maxWidth: 800, margin: "0 auto"}}>
-            {faqs.map((q, i) => (
+            {faqs.map((faq, i) => (
               <Reveal key={i} delay={i * 0.04}>
                 <motion.div
                   style={{
@@ -1028,7 +1046,7 @@ export default function TheOriginDnC() {
                       fontFamily: "inherit",
                     }}
                   >
-                    {q}
+                    {faq.q}
                     <motion.span
                       animate={{rotate: openFaq === i ? 180 : 0}}
                       transition={{duration: 0.25}}
@@ -1052,8 +1070,7 @@ export default function TheOriginDnC() {
                             lineHeight: 1.7,
                           }}
                         >
-                          Please contact us at {PHONE1} or {PHONE2} for detailed
-                          information about this topic.
+                          {faq.a}
                         </p>
                       </motion.div>
                     )}
