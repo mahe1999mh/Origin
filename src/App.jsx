@@ -34,7 +34,13 @@ function Reveal({children, delay = 0, direction = "up", className = ""}) {
 }
 
 /* ─── Ripple button ─── */
-function RippleButton({children, variant = "primary", style = {}, onClick}) {
+function RippleButton({
+  children,
+  variant = "primary",
+  style = {},
+  onClick,
+  href,
+}) {
   const [ripples, setRipples] = useState([]);
   const handleClick = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -53,20 +59,33 @@ function RippleButton({children, variant = "primary", style = {}, onClick}) {
     border: "none",
     cursor: "pointer",
     padding: "14px 32px",
-    borderRadius: 6,
+    borderRadius: 8,
     fontWeight: 700,
     fontSize: 14,
     letterSpacing: 1.2,
     textTransform: "uppercase",
     transition: "all .3s",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
     ...style,
   };
   const colors =
     variant === "primary"
       ? {background: "#E8443A", color: "#fff"}
-      : {background: "#1a1a1a", color: "#fff"};
+      : variant === "outline"
+        ? {
+            background: "transparent",
+            color: "#fff",
+            border: "2px solid rgba(255,255,255,.5)",
+          }
+        : {background: "#1a1a1a", color: "#fff"};
+  const Tag = href ? motion.a : motion.button;
   return (
-    <motion.button
+    <Tag
+      href={href}
       style={{...base, ...colors}}
       whileHover={{scale: 1.04, boxShadow: "0 8px 24px rgba(232,68,58,.35)"}}
       whileTap={{scale: 0.97}}
@@ -91,7 +110,33 @@ function RippleButton({children, variant = "primary", style = {}, onClick}) {
           }}
         />
       ))}
-    </motion.button>
+    </Tag>
+  );
+}
+
+/* ─── Counter animation ─── */
+function Counter({end, suffix = "", duration = 2}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, {once: true});
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let start = 0;
+    const step = end / (duration * 60);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else setCount(Math.floor(start));
+    }, 1000 / 60);
+    return () => clearInterval(timer);
+  }, [inView, end, duration]);
+  return (
+    <span ref={ref}>
+      {count}
+      {suffix}
+    </span>
   );
 }
 
@@ -307,6 +352,24 @@ const icons = {
       <path d="M24 12c0-6.6-5.4-12-12-12S0 5.4 0 12c0 6 4.4 11 10.1 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.7.2 2.7.2v2.9h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4C19.6 23 24 18 24 12z" />
     </svg>
   ),
+  arrowRight: (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    >
+      <path d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
+  ),
+  play: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  ),
 };
 
 /* ─── Data ─── */
@@ -317,6 +380,13 @@ const PHONE2 = "+91 7338070711";
 const ADDRESS =
   "No.05, 3rd Cross, AR Layout, JP Nagar - 6th Phase, Bangalore, India 560078";
 const TAGLINE = "Building Trust, Crafting Excellence";
+
+const stats = [
+  // { value: 10, suffix: "+", label: "Projects Completed" },
+  // { value: 5, suffix: "+", label: "Years Experience" },
+  // { value: 100, suffix: "%", label: "Client Satisfaction" },
+  // { value: 50, suffix: "+", label: "Expert Team Members" },
+];
 
 const features = [
   {
@@ -365,16 +435,66 @@ const services = [
 ];
 
 const processSteps = [
-  { num: "01", title: "Let's Get Started", desc: "We understand your needs and vision." },
-  { num: "02", title: "Design Specification", desc: "We create smart designs and finalize specifications." },
-  { num: "03", title: "Client Agreement", desc: "Scope, cost and timeline are agreed and confirmed." },
-  { num: "04", title: "Planning & Estimation", desc: "Detailed planning and estimation for smooth execution." },
-  { num: "05", title: "Approvals & Documentation", desc: "We handle all approvals and required paperwork." },
-  { num: "06", title: "Construction Begins", desc: "Work starts with skilled team and quality materials." },
-  { num: "07", title: "Quality Checks", desc: "Regular quality inspections at every stage." },
-  { num: "08", title: "Site Visits", desc: "Scheduled site visits to review progress." },
-  { num: "09", title: "Interior & Finishing", desc: "Interiors and finishes done with perfection." },
-  { num: "10", title: "Completion & Handover", desc: "Final handover of your dream home." },
+  {
+    num: "01",
+    title: "Let's Get Started",
+    desc: "We understand your needs and vision.",
+    emoji: "🤝",
+  },
+  {
+    num: "02",
+    title: "Design Specification",
+    desc: "We create smart designs and finalize specifications.",
+    emoji: "✏️",
+  },
+  {
+    num: "03",
+    title: "Client Agreement",
+    desc: "Scope, cost and timeline are agreed and confirmed.",
+    emoji: "📋",
+  },
+  {
+    num: "04",
+    title: "Planning & Estimation",
+    desc: "Detailed planning and estimation for smooth execution.",
+    emoji: "📐",
+  },
+  {
+    num: "05",
+    title: "Approvals & Documentation",
+    desc: "We handle all approvals and required paperwork.",
+    emoji: "📄",
+  },
+  {
+    num: "06",
+    title: "Construction Begins",
+    desc: "Work starts with skilled team and quality materials.",
+    emoji: "🏗️",
+  },
+  {
+    num: "07",
+    title: "Quality Checks",
+    desc: "Regular quality inspections at every stage.",
+    emoji: "✅",
+  },
+  {
+    num: "08",
+    title: "Site Visits",
+    desc: "Scheduled site visits to review progress.",
+    emoji: "📍",
+  },
+  {
+    num: "09",
+    title: "Interior & Finishing",
+    desc: "Interiors and finishes done with perfection.",
+    emoji: "🎨",
+  },
+  {
+    num: "10",
+    title: "Completion & Handover",
+    desc: "Final handover of your dream home.",
+    emoji: "🔑",
+  },
 ];
 
 const packages = [
@@ -510,24 +630,49 @@ export default function TheOriginDnC() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;600;700&display=swap');
         @keyframes rippleAnim { to { transform: scale(3); opacity: 0; } }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .brands-track { display: flex; gap: 60px; align-items: center; animation: marquee 25s linear infinite; width: max-content; }
+        .brands-track:hover { animation-play-state: paused; }
+        .brand-item { flex-shrink: 0; padding: 16px 28px; background: #fff; border-radius: 14px; border: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: center; height: 72px; min-width: 160px; transition: all .3s; }
+        .brand-item:hover { border-color: #E8443A33; box-shadow: 0 4px 20px rgba(0,0,0,.06); transform: translateY(-2px); }
         * { margin:0; padding:0; box-sizing:border-box; }
         html { scroll-behavior: smooth; }
-        .section { padding: 80px 24px; max-width: 1200px; margin: 0 auto; }
-        @media(max-width:768px) { .section { padding: 48px 16px; } }
+        .section { padding: 100px 24px; max-width: 1200px; margin: 0 auto; }
+        @media(max-width:768px) { .section { padding: 60px 16px; } }
         .heading-serif { font-family: 'Playfair Display', Georgia, serif; }
-        .section-title { text-align:center; margin-bottom: 12px; font-size: 32px; font-weight: 700; }
-        .section-line { width: 60px; height: 3px; background: #E8443A; margin: 0 auto 40px; border-radius: 2px; }
-        .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 24px; }
-        .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 24px; }
-        .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 24px; }
-        .img-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+        .section-title { text-align:center; margin-bottom: 12px; font-size: 36px; font-weight: 700; line-height: 1.2; }
+        @media(max-width:768px) { .section-title { font-size: 28px; } }
+        .section-sub { text-align:center; color:#777; max-width:580px; margin:0 auto 16px; line-height:1.7; font-size:15px; }
+        .section-line { width: 60px; height: 3px; background: #E8443A; margin: 0 auto 20px; border-radius: 2px; }
+        .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 48px; }
+        .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 28px; }
+        .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 28px; }
+        .img-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
         @media(max-width:600px) { .img-grid { grid-template-columns: repeat(2,1fr); } }
-        .process-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px 20px; }
-        @media(max-width:900px) { .process-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media(max-width:560px) { .process-grid { grid-template-columns: repeat(2, 1fr); } }
-        .process-card { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 28px 12px 24px; border-radius: 16px; background: #fff; border: 1px solid #f0f0f0; transition: all .3s; }
-        .process-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(232,68,58,.10); border-color: #E8443A33; }
-        .process-num { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #E8443A, #c0392b); color: #fff; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(232,68,58,.3); letter-spacing: 0.5px; }
+        .process-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px 16px; }
+        @media(max-width:1000px) { .process-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media(max-width:600px) { .process-grid { grid-template-columns: repeat(2, 1fr); } }
+        .process-card { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 32px 14px 24px; border-radius: 20px; background: #fff; border: 1px solid #f0f0f0; transition: all .35s cubic-bezier(.22,1,.36,1); cursor: default; }
+        .process-card:hover { transform: translateY(-8px); box-shadow: 0 20px 48px rgba(232,68,58,.12); border-color: #E8443A44; }
+        .process-num { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #E8443A, #c0392b); color: #fff; font-size: 12px; font-weight: 800; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(232,68,58,.35); letter-spacing: 0.5px; }
+        .stat-card { text-align: center; padding: 32px 16px; }
+        .stat-val { font-size: 42px; font-weight: 800; color: #E8443A; line-height: 1; margin-bottom: 8px; }
+        .stat-label { font-size: 14px; color: rgba(255,255,255,.7); font-weight: 500; letter-spacing: 0.5px; }
+        @media(max-width:768px) { .stat-val { font-size: 32px; } }
+        .nav-link { text-decoration: none; color: #444; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; transition: color .2s; position: relative; padding-bottom: 4px; }
+        .nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: #E8443A; transition: width .3s; }
+        .nav-link:hover { color: #E8443A; }
+        .nav-link:hover::after { width: 100%; }
+        .service-card { background: #fff; border-radius: 20px; padding: 36px 28px; text-align: center; border: 1px solid #f0f0f0; transition: all .35s cubic-bezier(.22,1,.36,1); height: 100%; }
+        .service-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(232,68,58,.12); border-color: #E8443A33; }
+        .feature-card { text-align: center; padding: 32px 20px; border-radius: 20px; transition: all .3s; }
+        .feature-card:hover { background: #fafafa; }
+        .faq-item { background: #fff; border-radius: 14px; margin-bottom: 12px; border: 1px solid #eee; overflow: hidden; transition: all .3s; }
+        .faq-item:hover { border-color: #E8443A33; box-shadow: 0 4px 20px rgba(0,0,0,.04); }
+        .pkg-card { background: #fff; border-radius: 20px; overflow: hidden; transition: all .35s; height: 100%; }
+        .pkg-card:hover { transform: translateY(-8px); box-shadow: 0 24px 56px rgba(0,0,0,.1); }
       `}</style>
 
       {/* ─── NAVBAR ─── */}
@@ -539,11 +684,11 @@ export default function TheOriginDnC() {
           right: 0,
           zIndex: 1000,
           background: scrolled
-            ? "rgba(255,255,255,.97)"
+            ? "rgba(255,255,255,.98)"
             : "rgba(255,255,255,.92)",
-          backdropFilter: "blur(12px)",
-          boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,.08)" : "none",
-          transition: "all .3s",
+          backdropFilter: "blur(16px)",
+          boxShadow: scrolled ? "0 1px 24px rgba(0,0,0,.06)" : "none",
+          transition: "all .4s",
         }}
       >
         <div
@@ -554,39 +699,32 @@ export default function TheOriginDnC() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            height: scrolled ? 64 : 72,
-            transition: "height .3s",
+            height: scrolled ? 64 : 76,
+            transition: "height .4s",
           }}
         >
           <div style={{display: "flex", alignItems: "center"}}>
-            <img src={logoImg} alt={BRAND} style={{ height: scrolled ? 40 : 48, transition: "height .3s" }} />
+            <img
+              src={logoImg}
+              alt={BRAND}
+              style={{height: scrolled ? 38 : 46, transition: "height .3s"}}
+            />
           </div>
           <div
-            style={{display: "flex", alignItems: "center", gap: 32}}
+            style={{display: "flex", alignItems: "center", gap: 36}}
             className="nav-links-desktop"
           >
             <style>{`@media(max-width:768px){.nav-links-desktop{display:none !important;}}`}</style>
             {["Home", "Services", "Packages", "Projects", "FAQ", "Contact"].map(
               (l) => (
-                <a
-                  key={l}
-                  href={`#${l.toLowerCase()}`}
-                  style={{
-                    textDecoration: "none",
-                    color: "#333",
-                    fontSize: 14,
-                    fontWeight: 500,
-                    letterSpacing: 0.5,
-                    transition: "color .2s",
-                  }}
-                  onMouseEnter={(e) => (e.target.style.color = "#E8443A")}
-                  onMouseLeave={(e) => (e.target.style.color = "#333")}
-                >
+                <a key={l} href={`#${l.toLowerCase()}`} className="nav-link">
                   {l}
                 </a>
               ),
             )}
-            <RippleButton style={{padding: "10px 22px", fontSize: 12}}>
+            <RippleButton
+              style={{padding: "10px 24px", fontSize: 12, borderRadius: 8}}
+            >
               Get Quote
             </RippleButton>
           </div>
@@ -614,15 +752,15 @@ export default function TheOriginDnC() {
               style={{
                 overflow: "hidden",
                 background: "#fff",
-                borderTop: "1px solid #eee",
+                borderTop: "1px solid #f0f0f0",
               }}
             >
               <div
                 style={{
-                  padding: "16px 24px",
+                  padding: "20px 24px",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 16,
+                  gap: 18,
                 }}
               >
                 {[
@@ -640,7 +778,7 @@ export default function TheOriginDnC() {
                     style={{
                       textDecoration: "none",
                       color: "#333",
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: 500,
                     }}
                   >
@@ -650,7 +788,7 @@ export default function TheOriginDnC() {
                 <RippleButton
                   style={{
                     alignSelf: "flex-start",
-                    padding: "10px 22px",
+                    padding: "10px 24px",
                     fontSize: 12,
                   }}
                 >
@@ -671,62 +809,340 @@ export default function TheOriginDnC() {
           alignItems: "center",
           position: "relative",
           overflow: "hidden",
-          background:
-            "linear-gradient(135deg, #C9956B 0%, #D4A574 50%, #BF8A5E 100%)",
-          paddingTop: 72,
+          background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+          paddingTop: 76,
         }}
       >
+        {/* Background image with overlay */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             background:
               "url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1400&h=900&fit=crop') center/cover",
-            opacity: 0.15,
+            opacity: 0.25,
           }}
         />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(135deg, rgba(26,26,26,.85) 0%, rgba(45,45,45,.7) 50%, rgba(232,68,58,.15) 100%)",
+          }}
+        />
+        {/* Decorative elements */}
+        <div
+          style={{
+            position: "absolute",
+            top: "15%",
+            right: "8%",
+            width: 300,
+            height: 300,
+            borderRadius: "50%",
+            border: "1px solid rgba(232,68,58,.15)",
+            animation: "pulse 4s ease-in-out infinite",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "20%",
+            right: "15%",
+            width: 180,
+            height: 180,
+            borderRadius: "50%",
+            border: "1px solid rgba(232,68,58,.1)",
+            animation: "pulse 4s ease-in-out infinite 1s",
+          }}
+        />
+
         <div
           className="section"
           style={{width: "100%", position: "relative", zIndex: 2}}
         >
-          <div style={{maxWidth: 640}}>
+          <div style={{maxWidth: 680}}>
             <Reveal>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "rgba(232,68,58,.15)",
+                  border: "1px solid rgba(232,68,58,.3)",
+                  borderRadius: 50,
+                  padding: "8px 20px",
+                  marginBottom: 28,
+                }}
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "#E8443A",
+                    animation: "pulse 2s infinite",
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: 13,
+                    color: "#E8443A",
+                    fontWeight: 600,
+                    letterSpacing: 1,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Bangalore's Trusted Builder
+                </span>
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
               <h1
                 className="heading-serif"
                 style={{
-                  fontSize: "clamp(36px,5vw,56px)",
+                  fontSize: "clamp(38px,5.5vw,62px)",
                   fontWeight: 700,
                   color: "#fff",
-                  lineHeight: 1.15,
-                  marginBottom: 8,
+                  lineHeight: 1.12,
+                  marginBottom: 20,
                 }}
               >
-                {BRAND}
+                We Build Homes <br />
+                <span
+                  style={{
+                    background: "linear-gradient(135deg, #E8443A, #ff6b5a)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  That Last Generations
+                </span>
               </h1>
-              <p style={{ fontSize: 20, color: "rgba(255,255,255,0.9)", fontWeight: 500, marginBottom: 32 }}>
-                {TAGLINE}
-              </p>
             </Reveal>
-            <Reveal delay={0.15}>
-              <RippleButton variant="dark" style={{ fontSize: 16, padding: "14px 36px", marginBottom: 32 }}>
-                Get a Free Estimate Now
-              </RippleButton>
+            <Reveal delay={0.2}>
+              <p
+                style={{
+                  fontSize: 18,
+                  color: "rgba(255,255,255,0.7)",
+                  lineHeight: 1.7,
+                  marginBottom: 40,
+                  maxWidth: 520,
+                }}
+              >
+                {TAGLINE}. Complete turnkey solutions for residential &
+                commercial projects across Karnataka.
+              </p>
             </Reveal>
             <Reveal delay={0.3}>
-              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.8)" }}>
-                Experience hassle-free home construction with us.
-              </p>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 16,
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                }}
+              >
+                <RippleButton
+                  style={{fontSize: 14, padding: "16px 36px", borderRadius: 10}}
+                >
+                  Get Free Estimate {icons.arrowRight}
+                </RippleButton>
+                <RippleButton
+                  variant="outline"
+                  style={{fontSize: 14, padding: "16px 36px", borderRadius: 10}}
+                >
+                  {icons.play} Watch Our Work
+                </RippleButton>
+              </div>
+            </Reveal>
+            <Reveal delay={0.45}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 16,
+                  marginTop: 48,
+                }}
+              >
+                <div style={{display: "flex"}}>
+                  {[p1, p2, p3].map((img, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "50%",
+                        border: "3px solid #1a1a1a",
+                        overflow: "hidden",
+                        marginLeft: i > 0 ? -12 : 0,
+                        position: "relative",
+                        zIndex: 3 - i,
+                      }}
+                    >
+                      <img
+                        src={img}
+                        alt=""
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div style={{fontSize: 14, color: "#fff", fontWeight: 600}}>
+                    10+ Happy Families
+                  </div>
+                  <div style={{fontSize: 12, color: "rgba(255,255,255,.5)"}}>
+                    Trust us with their dream homes
+                  </div>
+                </div>
+              </div>
             </Reveal>
           </div>
         </div>
         <div style={{position: "absolute", bottom: -1, left: 0, right: 0}}>
           <svg
-            viewBox="0 0 1440 80"
+            viewBox="0 0 1440 100"
             fill="#fff"
             style={{display: "block", width: "100%"}}
           >
-            <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" />
+            <path d="M0,60 C360,100 1080,20 1440,60 L1440,100 L0,100 Z" />
           </svg>
+        </div>
+      </section>
+
+      {/* ─── STATS BAR ─── */}
+      <section
+        style={{
+          background: "linear-gradient(135deg, #1a1a1a, #2d2d2d)",
+          marginTop: -1,
+        }}
+      >
+        <div style={{maxWidth: 1200, margin: "0 auto", padding: "0 24px"}}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(140px,1fr))",
+              gap: 0,
+            }}
+          >
+            {stats.map((s, i) => (
+              <Reveal key={s.label} delay={i * 0.1}>
+                <div
+                  className="stat-card"
+                  style={{
+                    borderRight:
+                      i < stats.length - 1
+                        ? "1px solid rgba(255,255,255,.08)"
+                        : "none",
+                  }}
+                >
+                  <div className="stat-val">
+                    <Counter end={s.value} suffix={s.suffix} />
+                  </div>
+                  <div className="stat-label">{s.label}</div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TRUSTED BRANDS ─── */}
+      <section
+        style={{background: "#fafafa", padding: "56px 0", overflow: "hidden"}}
+      >
+        <Reveal>
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: 13,
+              fontWeight: 700,
+              color: "#E8443A",
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            Our Partners
+          </p>
+          <h3
+            className="heading-serif"
+            style={{
+              textAlign: "center",
+              fontSize: 24,
+              fontWeight: 700,
+              marginBottom: 36,
+              color: "#1a1a1a",
+            }}
+          >
+            We Work With Trusted Brands
+          </h3>
+        </Reveal>
+        <div style={{overflow: "hidden", position: "relative"}}>
+          {/* Fade edges */}
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 80,
+              background: "linear-gradient(90deg, #fafafa, transparent)",
+              zIndex: 2,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: 80,
+              background: "linear-gradient(270deg, #fafafa, transparent)",
+              zIndex: 2,
+            }}
+          />
+          <div className="brands-track">
+            {[
+              {name: "Somany", color: "#E8192C", weight: 900},
+              {name: "Kajaria", color: "#1A5BA0", weight: 800, italic: true},
+              {name: "Dr. Fixit", color: "#1A1A1A", weight: 900},
+              {name: "Polycab", color: "#CC3300", weight: 800},
+              {name: "Asian Paints", color: "#FF6600", weight: 700},
+              {name: "Jaquar", color: "#006666", weight: 700, italic: true},
+              {name: "UltraTech Cement", color: "#1A1A1A", weight: 900},
+              {name: "JSW Steel", color: "#003399", weight: 800},
+              // Duplicate for seamless loop
+              {name: "Somany", color: "#E8192C", weight: 900},
+              {name: "Kajaria", color: "#1A5BA0", weight: 800, italic: true},
+              {name: "Dr. Fixit", color: "#1A1A1A", weight: 900},
+              {name: "Polycab", color: "#CC3300", weight: 800},
+              {name: "Asian Paints", color: "#FF6600", weight: 700},
+              {name: "Jaquar", color: "#006666", weight: 700, italic: true},
+              {name: "UltraTech Cement", color: "#1A1A1A", weight: 900},
+              {name: "JSW Steel", color: "#003399", weight: 800},
+            ].map((brand, i) => (
+              <div className="brand-item" key={i}>
+                <span
+                  style={{
+                    fontSize: 18,
+                    fontWeight: brand.weight,
+                    color: brand.color,
+                    letterSpacing: 0.5,
+                    fontStyle: brand.italic ? "italic" : "normal",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {brand.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -734,50 +1150,43 @@ export default function TheOriginDnC() {
       <section id="services" style={{background: "#fff"}}>
         <div className="section">
           <Reveal>
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#E8443A",
+                letterSpacing: 2,
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              What We Do
+            </p>
             <h2 className="section-title heading-serif">
               From Soil to Ceiling — We've Got It All
             </h2>
             <div className="section-line" />
-            <p
-              style={{
-                textAlign: "center",
-                color: "#666",
-                maxWidth: 600,
-                margin: "0 auto 48px",
-                lineHeight: 1.6,
-              }}
-            >
-              Bengaluru's Top Construction Professionals. We are a team of
-              licensed & reputed architects, contractors, interior designers &
-              renovators.
+            <p className="section-sub" style={{marginBottom: 56}}>
+              Bengaluru's top construction professionals. A team of licensed &
+              reputed architects, contractors, interior designers & renovators.
             </p>
           </Reveal>
           <div className="grid4">
             {services.map((s, i) => (
               <Reveal key={s.title} delay={i * 0.1}>
-                <motion.div
-                  whileHover={{
-                    y: -8,
-                    boxShadow: "0 16px 40px rgba(232,68,58,.12)",
-                  }}
-                  style={{
-                    background: "#fff",
-                    borderRadius: 16,
-                    padding: 32,
-                    textAlign: "center",
-                    border: "1px solid #f0f0f0",
-                  }}
-                >
+                <div className="service-card">
                   <div
                     style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: "50%",
+                      width: 68,
+                      height: 68,
+                      borderRadius: 18,
                       background: "linear-gradient(135deg, #E8443A, #d63031)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      margin: "0 auto 20px",
+                      margin: "0 auto 22px",
+                      boxShadow: "0 8px 24px rgba(232,68,58,.25)",
                     }}
                   >
                     {icons[s.icon]}
@@ -787,38 +1196,55 @@ export default function TheOriginDnC() {
                       fontSize: 18,
                       fontWeight: 700,
                       marginBottom: 12,
-                      color: "#E8443A",
+                      color: "#1a1a1a",
                     }}
                   >
                     {s.title}
                   </h3>
-                  <p style={{fontSize: 14, color: "#666", lineHeight: 1.7}}>
+                  <p style={{fontSize: 14, color: "#777", lineHeight: 1.7}}>
                     {s.desc}
                   </p>
-                </motion.div>
+                </div>
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* ─── PROCESS TIMELINE ─── */}
-          <div style={{marginTop: 80}}>
-            <Reveal>
-              <h2 className="section-title heading-serif">
-                Our Process. <span style={{color: "#E8443A"}}>Your Dream Home.</span>
-              </h2>
-              <div className="section-line" />
-              <p style={{textAlign: "center", color: "#666", maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.6}}>
-                A transparent, step-by-step journey from your first call to the moment you unlock your new door.
-              </p>
-            </Reveal>
-            <div className="process-grid">
-              {processSteps.map((step, i) => (
-                <Reveal key={step.num} delay={i * 0.06}>
-                  <div className="process-card">
-                    {/* Floating step number badge */}
-                    <div className="process-num">{step.num}</div>
-                    {/* Icon */}
-                    <div style={{
+      {/* ─── PROCESS ─── */}
+      <section style={{background: "#fafafa"}}>
+        <div className="section">
+          <Reveal>
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#E8443A",
+                letterSpacing: 2,
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              How We Work
+            </p>
+            <h2 className="section-title heading-serif">
+              Our Process.{" "}
+              <span style={{color: "#E8443A"}}>Your Dream Home.</span>
+            </h2>
+            <div className="section-line" />
+            <p className="section-sub" style={{marginBottom: 56}}>
+              A transparent, step-by-step journey from your first call to the
+              moment you unlock your new door.
+            </p>
+          </Reveal>
+          <div className="process-grid">
+            {processSteps.map((step, i) => (
+              <Reveal key={step.num} delay={i * 0.05}>
+                <div className="process-card">
+                  <div className="process-num">{step.num}</div>
+                  <div
+                    style={{
                       width: 64,
                       height: 64,
                       borderRadius: "50%",
@@ -826,66 +1252,69 @@ export default function TheOriginDnC() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      marginBottom: 14,
+                      marginBottom: 16,
                       fontSize: 28,
-                    }}>
-                      {["🤝", "✏️", "📋", "📐", "📄", "🏗️", "✅", "📍", "🎨", "🔑"][i]}
-                    </div>
-                    {/* Title */}
-                    <h4 style={{
+                    }}
+                  >
+                    {step.emoji}
+                  </div>
+                  <h4
+                    style={{
                       fontSize: 14,
                       fontWeight: 700,
                       color: "#1a1a1a",
                       marginBottom: 8,
                       lineHeight: 1.35,
-                    }}>
-                      {step.title}
-                    </h4>
-                    {/* Description */}
-                    <p style={{
-                      fontSize: 12.5,
-                      color: "#888",
-                      lineHeight: 1.6,
-                    }}>
-                      {step.desc}
-                    </p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+                    }}
+                  >
+                    {step.title}
+                  </h4>
+                  <p style={{fontSize: 12.5, color: "#888", lineHeight: 1.6}}>
+                    {step.desc}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ─── RECENT WORKS ─── */}
-      <section id="projects" style={{background: "#fafafa"}}>
+      <section id="projects" style={{background: "#fff"}}>
         <div className="section">
           <Reveal>
-            <h2 className="section-title heading-serif">Our Recent Works</h2>
-            <div className="section-line" />
             <p
               style={{
                 textAlign: "center",
-                color: "#666",
-                maxWidth: 600,
-                margin: "0 auto 48px",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#E8443A",
+                letterSpacing: 2,
+                textTransform: "uppercase",
+                marginBottom: 12,
               }}
             >
+              Portfolio
+            </p>
+            <h2 className="section-title heading-serif">Our Recent Works</h2>
+            <div className="section-line" />
+            <p className="section-sub" style={{marginBottom: 56}}>
               Experience the essence of thoughtful construction in Bangalore —
               our work speaks volumes about who we are and what we build.
             </p>
           </Reveal>
           <div className="img-grid">
             {projectImages.map((src, i) => (
-              <Reveal key={i} delay={i * 0.05}>
+              <Reveal key={i} delay={i * 0.06}>
                 <motion.div
                   whileHover={{scale: 1.03}}
                   style={{
-                    borderRadius: 12,
+                    borderRadius: 16,
                     overflow: "hidden",
                     aspectRatio: "4/3",
                     cursor: "pointer",
-                    boxShadow: "0 4px 16px rgba(0,0,0,.08)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,.08)",
+                    position: "relative",
                   }}
                 >
                   <img
@@ -896,7 +1325,20 @@ export default function TheOriginDnC() {
                       height: "100%",
                       objectFit: "cover",
                       display: "block",
+                      transition: "transform .5s",
                     }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(180deg, transparent 60%, rgba(0,0,0,.4) 100%)",
+                      opacity: 0,
+                      transition: "opacity .3s",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = 0)}
                   />
                 </motion.div>
               </Reveal>
@@ -906,43 +1348,46 @@ export default function TheOriginDnC() {
       </section>
 
       {/* ─── WHAT YOU GET ─── */}
-      <section style={{background: "#fff"}}>
+      <section style={{background: "#fafafa"}}>
         <div className="section">
           <Reveal>
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#E8443A",
+                letterSpacing: 2,
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              Why Choose Us
+            </p>
             <h2 className="section-title heading-serif">
               What You Get When You Hire Us
             </h2>
             <div className="section-line" />
-            <p
-              style={{
-                textAlign: "center",
-                color: "#666",
-                maxWidth: 600,
-                margin: "0 auto 48px",
-              }}
-            >
+            <p className="section-sub" style={{marginBottom: 56}}>
               At our core are four things that define who we are and what we
-              stand for. This is what you can count on us.
+              stand for.
             </p>
           </Reveal>
           <div className="grid4">
             {features.map((f, i) => (
               <Reveal key={f.title} delay={i * 0.1}>
-                <motion.div
-                  whileHover={{y: -6}}
-                  style={{textAlign: "center", padding: 24}}
-                >
+                <div className="feature-card">
                   <div
                     style={{
                       width: 72,
                       height: 72,
-                      borderRadius: "50%",
+                      borderRadius: 18,
                       background: "linear-gradient(135deg, #E8443A, #c0392b)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      margin: "0 auto 20px",
-                      boxShadow: "0 8px 24px rgba(232,68,58,.25)",
+                      margin: "0 auto 22px",
+                      boxShadow: "0 8px 28px rgba(232,68,58,.25)",
                     }}
                   >
                     {icons[f.icon]}
@@ -957,10 +1402,10 @@ export default function TheOriginDnC() {
                   >
                     {f.title}
                   </h3>
-                  <p style={{fontSize: 14, color: "#666", lineHeight: 1.7}}>
+                  <p style={{fontSize: 14, color: "#777", lineHeight: 1.7}}>
                     {f.desc}
                   </p>
-                </motion.div>
+                </div>
               </Reveal>
             ))}
           </div>
@@ -968,52 +1413,133 @@ export default function TheOriginDnC() {
       </section>
 
       {/* ─── PACKAGES ─── */}
-      <section id="packages" style={{ background: "#fafafa" }}>
+      <section id="packages" style={{background: "#fff"}}>
         <div className="section">
           <Reveal>
-            <h2 className="section-title heading-serif">Our Turnkey Construction Packages</h2>
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#E8443A",
+                letterSpacing: 2,
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              Pricing
+            </p>
+            <h2 className="section-title heading-serif">
+              Our Turnkey Construction Packages
+            </h2>
             <div className="section-line" />
-            <p style={{ textAlign: "center", color: "#666", maxWidth: 600, margin: "0 auto 48px" }}>
-              Come to our Experience Centre and get a look and feel of what we do! No substandard products used and no surprises later!
+            <p className="section-sub" style={{marginBottom: 56}}>
+              Come to our Experience Centre and get a look and feel of what we
+              do! No substandard products and no surprises later!
             </p>
           </Reveal>
           <div className="grid3">
             {packages.map((pkg, i) => (
               <Reveal key={pkg.name} delay={i * 0.12}>
-                <motion.div
-                  whileHover={{ y: -8, boxShadow: "0 20px 50px rgba(0,0,0,.1)" }}
+                <div
+                  className="pkg-card"
                   style={{
-                    background: "#fff",
-                    borderRadius: 16,
-                    overflow: "hidden",
-                    border: pkg.featured ? "2px solid #E8443A" : "1px solid #eee",
+                    border: pkg.featured
+                      ? "2px solid #E8443A"
+                      : "1px solid #eee",
+                    position: "relative",
                   }}
                 >
-                  <div style={{
-                    background: pkg.featured ? "#E8443A" : "#1a1a1a",
-                    color: "#fff",
-                    padding: "20px 28px",
-                    textAlign: "center",
-                  }}>
-                    {pkg.featured && (
-                      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, marginBottom: 6, opacity: 0.85 }}>MOST POPULAR</div>
-                    )}
-                    <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: 2, margin: 0 }}>{pkg.name} PACKAGE</h3>
+                  {pkg.featured && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 16,
+                        right: -8,
+                        background: "#E8443A",
+                        color: "#fff",
+                        fontSize: 10,
+                        fontWeight: 800,
+                        letterSpacing: 1.5,
+                        padding: "6px 16px 6px 12px",
+                        borderRadius: "4px 0 0 4px",
+                        boxShadow: "0 2px 8px rgba(232,68,58,.3)",
+                      }}
+                    >
+                      MOST POPULAR
+                    </div>
+                  )}
+                  <div
+                    style={{
+                      background: pkg.featured
+                        ? "linear-gradient(135deg, #E8443A, #c0392b)"
+                        : "linear-gradient(135deg, #1a1a1a, #2d2d2d)",
+                      color: "#fff",
+                      padding: "28px 28px",
+                      textAlign: "center",
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 800,
+                        letterSpacing: 3,
+                        margin: 0,
+                      }}
+                    >
+                      {pkg.name}
+                    </h3>
+                    <p style={{fontSize: 12, opacity: 0.7, marginTop: 4}}>
+                      PACKAGE
+                    </p>
                   </div>
-                  <div style={{ padding: 28 }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+                  <div style={{padding: 28}}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 11,
+                        marginBottom: 28,
+                      }}
+                    >
                       {pkg.items.map((item) => (
-                        <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#555" }}>
-                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#E8443A22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#E8443A" }} />
-                          </div>
+                        <div
+                          key={item}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 12,
+                            fontSize: 13.5,
+                            color: "#555",
+                          }}
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#E8443A"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                          >
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
                           {item}
                         </div>
                       ))}
                     </div>
-                    <RippleButton style={{ width: "100%", padding: "12px 0", fontSize: 12 }}>GET A QUOTE</RippleButton>
+                    <RippleButton
+                      style={{
+                        width: "100%",
+                        padding: "14px 0",
+                        fontSize: 13,
+                        borderRadius: 10,
+                      }}
+                    >
+                      GET A QUOTE
+                    </RippleButton>
                   </div>
-                </motion.div>
+                </div>
               </Reveal>
             ))}
           </div>
@@ -1021,14 +1547,31 @@ export default function TheOriginDnC() {
       </section>
 
       {/* ─── ABOUT ─── */}
-      <section style={{background: "#fff"}}>
+      <section style={{background: "#fafafa"}}>
         <div className="section">
           <div className="grid2" style={{alignItems: "center"}}>
             <Reveal direction="left">
               <div>
+                <p
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: "#E8443A",
+                    letterSpacing: 2,
+                    textTransform: "uppercase",
+                    marginBottom: 12,
+                  }}
+                >
+                  About Us
+                </p>
                 <h2
                   className="heading-serif"
-                  style={{fontSize: 32, fontWeight: 700, marginBottom: 12}}
+                  style={{
+                    fontSize: 36,
+                    fontWeight: 700,
+                    marginBottom: 12,
+                    lineHeight: 1.2,
+                  }}
                 >
                   Get to Know {BRAND_SHORT}
                 </h2>
@@ -1038,44 +1581,92 @@ export default function TheOriginDnC() {
                     height: 3,
                     background: "#E8443A",
                     borderRadius: 2,
-                    marginBottom: 24,
+                    marginBottom: 28,
                   }}
                 />
                 <p
                   style={{
-                    color: "#555",
+                    color: "#666",
                     lineHeight: 1.8,
                     fontSize: 15,
                     marginBottom: 16,
                   }}
                 >
-                  {BRAND} is a Bangalore based construction company offering complete turnkey solutions across Karnataka for both residential and commercial projects. We specialize in architectural design, construction, interiors and renovation works — providing end-to-end services from concept to final handover under one roof.
+                  {BRAND} is a Bangalore based construction company offering
+                  complete turnkey solutions across Karnataka for both
+                  residential and commercial projects. We specialize in
+                  architectural design, construction, interiors and renovation
+                  works — providing end-to-end services from concept to final
+                  handover under one roof.
                 </p>
                 <p
                   style={{
-                    color: "#555",
+                    color: "#666",
                     lineHeight: 1.8,
                     fontSize: 15,
-                    marginBottom: 24,
+                    marginBottom: 32,
                   }}
                 >
-                  Our approach focuses on quality workmanship, timely project delivery and budget-friendly solutions without compromising standards. We are committed to delivering durable, functional, and aesthetically pleasing spaces tailored to our client's needs.
+                  Our approach focuses on quality workmanship, timely project
+                  delivery and budget-friendly solutions without compromising
+                  standards. We are committed to delivering durable, functional,
+                  and aesthetically pleasing spaces tailored to our client's
+                  needs.
                 </p>
-                <RippleButton>Read More</RippleButton>
+                <div style={{display: "flex", gap: 16, flexWrap: "wrap"}}>
+                  <RippleButton>Learn More</RippleButton>
+                  <RippleButton
+                    variant="dark"
+                    style={{
+                      background: "transparent",
+                      color: "#1a1a1a",
+                      border: "2px solid #ddd",
+                    }}
+                  >
+                    {icons.phone} Contact Us
+                  </RippleButton>
+                </div>
               </div>
             </Reveal>
             <Reveal direction="right">
-              <div
-                style={{
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  boxShadow: "0 12px 40px rgba(0,0,0,.1)",
-                }}
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&h=400&fit=crop"
-                  alt="About"
-                  style={{width: "100%", display: "block"}}
+              <div style={{position: "relative"}}>
+                <div
+                  style={{
+                    borderRadius: 20,
+                    overflow: "hidden",
+                    boxShadow: "0 16px 48px rgba(0,0,0,.1)",
+                  }}
+                >
+                  <img
+                    src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&h=400&fit=crop"
+                    alt="About"
+                    style={{width: "100%", display: "block"}}
+                  />
+                </div>
+                {/* Decorative accent */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: -16,
+                    right: -16,
+                    width: 120,
+                    height: 120,
+                    borderRadius: 20,
+                    background: "linear-gradient(135deg, #E8443A22, #E8443A11)",
+                    zIndex: -1,
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -16,
+                    left: -16,
+                    width: 80,
+                    height: 80,
+                    borderRadius: 16,
+                    border: "3px solid #E8443A33",
+                    zIndex: -1,
+                  }}
                 />
               </div>
             </Reveal>
@@ -1087,43 +1678,78 @@ export default function TheOriginDnC() {
       <section id="faq" style={{background: "#fff"}}>
         <div className="section">
           <Reveal>
-            <h2 className="section-title heading-serif">What Clients Ask — FAQ's</h2>
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#E8443A",
+                letterSpacing: 2,
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              Got Questions?
+            </p>
+            <h2 className="section-title heading-serif">
+              What Clients Ask — FAQ's
+            </h2>
             <div className="section-line" />
+            <p className="section-sub" style={{marginBottom: 48}}>
+              Everything you need to know before starting your construction
+              journey with us.
+            </p>
           </Reveal>
           <div style={{maxWidth: 800, margin: "0 auto"}}>
             {faqs.map((faq, i) => (
               <Reveal key={i} delay={i * 0.04}>
-                <motion.div
-                  style={{
-                    background: "#fafafa",
-                    borderRadius: 10,
-                    marginBottom: 10,
-                    border: "1px solid #eee",
-                    overflow: "hidden",
-                  }}
-                >
+                <div className="faq-item">
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     style={{
                       width: "100%",
                       background: "none",
                       border: "none",
-                      padding: "18px 20px",
+                      padding: "20px 24px",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
                       cursor: "pointer",
-                      fontSize: 14,
-                      fontWeight: 500,
-                      color: "#E8443A",
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: openFaq === i ? "#E8443A" : "#333",
                       textAlign: "left",
                       fontFamily: "inherit",
+                      transition: "color .2s",
+                      gap: 16,
                     }}
                   >
-                    {faq.q}
+                    <span
+                      style={{display: "flex", alignItems: "center", gap: 14}}
+                    >
+                      <span
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 800,
+                          color: "#E8443A",
+                          background: "#E8443A11",
+                          width: 28,
+                          height: 28,
+                          borderRadius: 8,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      {faq.q}
+                    </span>
                     <motion.span
                       animate={{rotate: openFaq === i ? 180 : 0}}
                       transition={{duration: 0.25}}
+                      style={{flexShrink: 0}}
                     >
                       {icons.chevDown}
                     </motion.span>
@@ -1138,10 +1764,10 @@ export default function TheOriginDnC() {
                       >
                         <p
                           style={{
-                            padding: "0 20px 18px",
+                            padding: "0 24px 20px 66px",
                             fontSize: 14,
-                            color: "#666",
-                            lineHeight: 1.7,
+                            color: "#777",
+                            lineHeight: 1.8,
                           }}
                         >
                           {faq.a}
@@ -1149,10 +1775,84 @@ export default function TheOriginDnC() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </div>
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ─── CTA BANNER ─── */}
+      <section
+        style={{
+          background: "linear-gradient(135deg, #E8443A, #c0392b)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1400&h=400&fit=crop') center/cover",
+            opacity: 0.08,
+          }}
+        />
+        <div
+          className="section"
+          style={{
+            position: "relative",
+            textAlign: "center",
+            padding: "80px 24px",
+          }}
+        >
+          <Reveal>
+            <h2
+              className="heading-serif"
+              style={{
+                fontSize: "clamp(28px,4vw,42px)",
+                color: "#fff",
+                fontWeight: 700,
+                marginBottom: 16,
+              }}
+            >
+              Ready to Build Your Dream Home?
+            </h2>
+            <p
+              style={{
+                fontSize: 16,
+                color: "rgba(255,255,255,.8)",
+                marginBottom: 36,
+                maxWidth: 500,
+                margin: "0 auto 36px",
+              }}
+            >
+              Get a free consultation and detailed cost estimate for your
+              project today.
+            </p>
+            <div
+              style={{
+                display: "flex",
+                gap: 16,
+                justifyContent: "center",
+                flexWrap: "wrap",
+              }}
+            >
+              <RippleButton
+                variant="dark"
+                style={{fontSize: 14, padding: "16px 40px", borderRadius: 10}}
+              >
+                Get Free Estimate
+              </RippleButton>
+              <RippleButton
+                variant="outline"
+                style={{fontSize: 14, padding: "16px 40px", borderRadius: 10}}
+              >
+                {icons.phone} Call Now
+              </RippleButton>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -1160,26 +1860,26 @@ export default function TheOriginDnC() {
       <footer
         id="contact"
         style={{
-          background: "#1a1a1a",
+          background: "#0f0f0f",
           color: "#ccc",
-          padding: "64px 24px 32px",
+          padding: "72px 24px 32px",
         }}
       >
         <div style={{maxWidth: 1200, margin: "0 auto"}}>
-          <div className="grid3" style={{marginBottom: 48}}>
+          <div className="grid3" style={{marginBottom: 56}}>
             <div>
-              <div style={{marginBottom: 20}}>
-                <img src={logoImg} alt={BRAND} style={{ height: 48 }} />
+              <div style={{marginBottom: 24}}>
+                <img src={logoImg} alt={BRAND} style={{height: 48}} />
               </div>
               <p
                 style={{
                   fontSize: 13,
-                  color: "#999",
-                  marginBottom: 16,
-                  lineHeight: 1.6,
+                  color: "#666",
+                  marginBottom: 20,
+                  lineHeight: 1.7,
                 }}
               >
-                🏗 Turnkey | Residential | Commercial | Interiors | Architects |
+                Turnkey | Residential | Commercial | Interiors | Architects |
                 Renovation
               </p>
               <div
@@ -1187,8 +1887,9 @@ export default function TheOriginDnC() {
                   display: "flex",
                   alignItems: "flex-start",
                   gap: 10,
-                  marginBottom: 12,
+                  marginBottom: 14,
                   fontSize: 14,
+                  color: "#999",
                 }}
               >
                 {icons.location}
@@ -1199,12 +1900,17 @@ export default function TheOriginDnC() {
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
-                  marginBottom: 8,
+                  marginBottom: 10,
                   fontSize: 14,
                 }}
               >
                 {icons.phone}
-                <span style={{color: "#E8443A"}}>{PHONE1}</span>
+                <a
+                  href={`tel:${PHONE1.replace(/\s/g, "")}`}
+                  style={{color: "#E8443A", textDecoration: "none"}}
+                >
+                  {PHONE1}
+                </a>
               </div>
               <div
                 style={{
@@ -1215,16 +1921,21 @@ export default function TheOriginDnC() {
                 }}
               >
                 {icons.phone}
-                <span style={{color: "#E8443A"}}>{PHONE2}</span>
+                <a
+                  href={`tel:${PHONE2.replace(/\s/g, "")}`}
+                  style={{color: "#E8443A", textDecoration: "none"}}
+                >
+                  {PHONE2}
+                </a>
               </div>
             </div>
             <div>
               <h4
                 style={{
-                  color: "#E8443A",
+                  color: "#fff",
                   fontSize: 14,
                   fontWeight: 700,
-                  marginBottom: 16,
+                  marginBottom: 20,
                   letterSpacing: 1.5,
                 }}
               >
@@ -1244,14 +1955,20 @@ export default function TheOriginDnC() {
                   href="#"
                   style={{
                     display: "block",
-                    color: "#999",
+                    color: "#777",
                     textDecoration: "none",
                     fontSize: 14,
-                    marginBottom: 10,
-                    transition: "color .2s",
+                    marginBottom: 12,
+                    transition: "all .2s",
                   }}
-                  onMouseEnter={(e) => (e.target.style.color = "#E8443A")}
-                  onMouseLeave={(e) => (e.target.style.color = "#999")}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = "#E8443A";
+                    e.target.style.paddingLeft = "4px";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = "#777";
+                    e.target.style.paddingLeft = "0";
+                  }}
                 >
                   {l}
                 </a>
@@ -1260,10 +1977,10 @@ export default function TheOriginDnC() {
             <div>
               <h4
                 style={{
-                  color: "#E8443A",
+                  color: "#fff",
                   fontSize: 14,
                   fontWeight: 700,
-                  marginBottom: 16,
+                  marginBottom: 20,
                   letterSpacing: 1.5,
                 }}
               >
@@ -1280,15 +1997,15 @@ export default function TheOriginDnC() {
                   href="#"
                   style={{
                     display: "block",
-                    color: "#999",
+                    color: "#777",
                     textDecoration: "none",
                     fontSize: 13,
-                    marginBottom: 12,
+                    marginBottom: 14,
                     lineHeight: 1.5,
                     transition: "color .2s",
                   }}
                   onMouseEnter={(e) => (e.target.style.color = "#E8443A")}
-                  onMouseLeave={(e) => (e.target.style.color = "#999")}
+                  onMouseLeave={(e) => (e.target.style.color = "#777")}
                 >
                   {p}
                 </a>
@@ -1297,36 +2014,56 @@ export default function TheOriginDnC() {
           </div>
           <div
             style={{
-              borderTop: "1px solid #333",
+              borderTop: "1px solid #222",
               paddingTop: 24,
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               flexWrap: "wrap",
-              gap: 12,
+              gap: 16,
             }}
           >
-            <p style={{fontSize: 12, color: "#666"}}>
+            <p style={{fontSize: 12, color: "#555"}}>
               Copyright 2024-2025 {BRAND} | All Rights Reserved
             </p>
-            <div
-              style={{
-                display: "flex",
-                gap: 16,
-                alignItems: "center",
-                color: "#999",
-              }}
-            >
-              {icons.whatsapp}
-              <a
-                href="https://instagram.com/theorigin.dnc"
-                target="_blank"
-                rel="noopener"
-                style={{color: "#999"}}
-              >
-                {icons.instagram}
-              </a>
-              <span style={{color: "#999"}}>{icons.facebook}</span>
+            <div style={{display: "flex", gap: 12, alignItems: "center"}}>
+              {[
+                {icon: icons.whatsapp, href: "https://wa.me/917090762023"},
+                {
+                  icon: icons.instagram,
+                  href: "https://instagram.com/theorigin.dnc",
+                },
+                {icon: icons.facebook, href: "#"},
+              ].map((social, i) => (
+                <a
+                  key={i}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener"
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: "#1a1a1a",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#999",
+                    transition: "all .2s",
+                    border: "1px solid #222",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#E8443A";
+                    e.currentTarget.style.borderColor = "#E8443A";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#1a1a1a";
+                    e.currentTarget.style.borderColor = "#222";
+                  }}
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
           </div>
         </div>
@@ -1343,14 +2080,14 @@ export default function TheOriginDnC() {
           bottom: 24,
           right: 24,
           zIndex: 999,
-          width: 56,
-          height: 56,
+          width: 58,
+          height: 58,
           borderRadius: "50%",
           background: "#25D366",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(37,211,102,.4)",
+          boxShadow: "0 6px 20px rgba(37,211,102,.4)",
           cursor: "pointer",
         }}
       >
