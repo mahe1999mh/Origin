@@ -364,6 +364,19 @@ const services = [
   },
 ];
 
+const processSteps = [
+  { num: "01", title: "Let's Get Started", desc: "We understand your needs and vision." },
+  { num: "02", title: "Design Specification", desc: "We create smart designs and finalize specifications." },
+  { num: "03", title: "Client Agreement", desc: "Scope, cost and timeline are agreed and confirmed." },
+  { num: "04", title: "Planning & Estimation", desc: "Detailed planning and estimation for smooth execution." },
+  { num: "05", title: "Approvals & Documentation", desc: "We handle all approvals and required paperwork." },
+  { num: "06", title: "Construction Begins", desc: "Work starts with skilled team and quality materials." },
+  { num: "07", title: "Quality Checks", desc: "Regular quality inspections at every stage." },
+  { num: "08", title: "Site Visits", desc: "Scheduled site visits to review progress." },
+  { num: "09", title: "Interior & Finishing", desc: "Interiors and finishes done with perfection." },
+  { num: "10", title: "Completion & Handover", desc: "Final handover of your dream home." },
+];
+
 const packages = [
   {
     name: "BUDGET",
@@ -509,6 +522,12 @@ export default function TheOriginDnC() {
         .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 24px; }
         .img-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
         @media(max-width:600px) { .img-grid { grid-template-columns: repeat(2,1fr); } }
+        .process-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px 20px; }
+        @media(max-width:900px) { .process-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media(max-width:560px) { .process-grid { grid-template-columns: repeat(2, 1fr); } }
+        .process-card { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 28px 12px 24px; border-radius: 16px; background: #fff; border: 1px solid #f0f0f0; transition: all .3s; }
+        .process-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(232,68,58,.10); border-color: #E8443A33; }
+        .process-num { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #E8443A, #c0392b); color: #fff; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(232,68,58,.3); letter-spacing: 0.5px; }
       `}</style>
 
       {/* ─── NAVBAR ─── */}
@@ -779,6 +798,61 @@ export default function TheOriginDnC() {
                 </motion.div>
               </Reveal>
             ))}
+          </div>
+
+          {/* ─── PROCESS TIMELINE ─── */}
+          <div style={{marginTop: 80}}>
+            <Reveal>
+              <h2 className="section-title heading-serif">
+                Our Process. <span style={{color: "#E8443A"}}>Your Dream Home.</span>
+              </h2>
+              <div className="section-line" />
+              <p style={{textAlign: "center", color: "#666", maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.6}}>
+                A transparent, step-by-step journey from your first call to the moment you unlock your new door.
+              </p>
+            </Reveal>
+            <div className="process-grid">
+              {processSteps.map((step, i) => (
+                <Reveal key={step.num} delay={i * 0.06}>
+                  <div className="process-card">
+                    {/* Floating step number badge */}
+                    <div className="process-num">{step.num}</div>
+                    {/* Icon */}
+                    <div style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #FFF5F4, #FDECEA)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 14,
+                      fontSize: 28,
+                    }}>
+                      {["🤝", "✏️", "📋", "📐", "📄", "🏗️", "✅", "📍", "🎨", "🔑"][i]}
+                    </div>
+                    {/* Title */}
+                    <h4 style={{
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: "#1a1a1a",
+                      marginBottom: 8,
+                      lineHeight: 1.35,
+                    }}>
+                      {step.title}
+                    </h4>
+                    {/* Description */}
+                    <p style={{
+                      fontSize: 12.5,
+                      color: "#888",
+                      lineHeight: 1.6,
+                    }}>
+                      {step.desc}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
