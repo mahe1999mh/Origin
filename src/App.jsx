@@ -862,63 +862,32 @@ export default function TheOriginDnC() {
           style={{width: "100%", position: "relative", zIndex: 2}}
         >
           <div style={{maxWidth: 680}}>
-            <Reveal>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: "rgba(232,68,58,.15)",
-                  border: "1px solid rgba(232,68,58,.3)",
-                  borderRadius: 50,
-                  padding: "8px 20px",
-                  marginBottom: 28,
-                }}
-              >
-                <div
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: "#E8443A",
-                    animation: "pulse 2s infinite",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: 13,
-                    color: "#E8443A",
-                    fontWeight: 600,
-                    letterSpacing: 1,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Bangalore's Trusted Builder
-                </span>
-              </div>
-            </Reveal>
             <Reveal delay={0.1}>
               <h1
                 className="heading-serif"
                 style={{
-                  fontSize: "clamp(38px,5.5vw,62px)",
+                  fontSize: "clamp(32px,4.5vw,54px)",
                   fontWeight: 700,
                   color: "#fff",
                   lineHeight: 1.12,
-                  marginBottom: 20,
+                  marginBottom: 10,
                 }}
               >
-                We Build Homes <br />
-                <span
-                  style={{
-                    background: "linear-gradient(135deg, #E8443A, #ff6b5a)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
-                  That Last Generations
-                </span>
+                {BRAND}
               </h1>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <p
+                style={{
+                  fontSize: "clamp(16px,2vw,22px)",
+                  color: "#fff",
+                  fontStyle: "italic",
+                  letterSpacing: 0.5,
+                  marginBottom: 24,
+                }}
+              >
+                {TAGLINE}
+              </p>
             </Reveal>
             <Reveal delay={0.2}>
               <p
@@ -930,8 +899,8 @@ export default function TheOriginDnC() {
                   maxWidth: 520,
                 }}
               >
-                {TAGLINE}. Complete turnkey solutions for residential &
-                commercial projects across Karnataka.
+                Complete turnkey solutions for residential &amp; commercial
+                projects across Karnataka.
               </p>
             </Reveal>
             <Reveal delay={0.3}>
@@ -954,52 +923,6 @@ export default function TheOriginDnC() {
                 >
                   {icons.play} Watch Our Work
                 </RippleButton>
-              </div>
-            </Reveal>
-            <Reveal delay={0.45}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                  marginTop: 48,
-                }}
-              >
-                <div style={{display: "flex"}}>
-                  {[p1, p2, p3].map((img, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: "50%",
-                        border: "3px solid #1a1a1a",
-                        overflow: "hidden",
-                        marginLeft: i > 0 ? -12 : 0,
-                        position: "relative",
-                        zIndex: 3 - i,
-                      }}
-                    >
-                      <img
-                        src={img}
-                        alt=""
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <div style={{fontSize: 14, color: "#fff", fontWeight: 600}}>
-                    10+ Happy Families
-                  </div>
-                  <div style={{fontSize: 12, color: "rgba(255,255,255,.5)"}}>
-                    Trust us with their dream homes
-                  </div>
-                </div>
               </div>
             </Reveal>
           </div>
