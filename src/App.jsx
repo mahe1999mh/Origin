@@ -809,7 +809,7 @@ export default function TheOriginDnC() {
           alignItems: "center",
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+          background: "linear-gradient(135deg, #a4a4a4 0%, #2d2d2d 100%)",
           paddingTop: 76,
         }}
       >
